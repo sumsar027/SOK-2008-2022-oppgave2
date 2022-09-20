@@ -1,0 +1,97 @@
+library(readr)
+library(ggplot2)
+library(tidyverse)
+
+
+# Henter inn exel filen fra downloads 
+union_unempl <- read_csv("C:/Users/Admin/Downloads/union_unempl.csv")
+View(union_unempl)
+head(union_unempl)
+
+colnames(union_unempl)[1] <- 'region' 
+
+map <- map_data("world")
+View(mapdata)
+
+## OPPGAVE 1
+
+al <- subset(union_unempl, select = -c(iso3c, year, level, coord, density, coverage, age, mean_unempl2015_2019) )
+view(al) # Fjerner unødvendige kolonner og beholder de nødvendige 
+
+mapdata <- left_join(map, al, by="region")
+View(mapdata) # Setter sammen mapdataen med al datasettet 
+
+mapdata1 <- mapdata %>% filter(!is.na(mapdata$unempl))
+View(mapdata1) # Fjerner na verdier 
+
+map1<-ggplot(mapdata1, aes( x = long, y = lat, group=group)) +
+  geom_polygon(aes(fill = unempl), color = "black")
+map1 # Lager map
+
+map2 <- map1 + scale_fill_gradient(name = "Arbeidsledighetsrate", low = "green", high =  "red", na.value = "grey50")+
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        rect = element_blank()) # Rydder grafen 
+map2
+
+
+##OPPGAVE 2
+
+#1)
+
+fd <- subset(union_unempl, select = -c(iso3c, year, level, coord, coverage, age, unempl, mean_unempl2015_2019) ) 
+# Fjerner unødvendige kolonner og beholder de nødvendige 
+
+mapfd <- left_join(map, fd, by="region")
+mapfd1 <- mapfd %>% filter(!is.na(mapfd$density)) # Setter sammen mapdataen og fd, fjerner na verdier
+
+mapfd2<-ggplot(mapfd1, aes( x = long, y = lat, group=group)) +
+  geom_polygon(aes(fill = density), color = "black")
+mapfd2 # Lager map
+
+mapfd3 <- mapfd2 + scale_fill_gradient(name = "Fagforeningsdensitet", low = "green", high =  "red", na.value = "grey50")+
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        rect = element_blank()) # Rydder grafen 
+mapfd3 
+
+#2)
+
+ec <- subset(union_unempl, select = -c(iso3c, year, level, coord, density, age, unempl, mean_unempl2015_2019) )
+# Fjerner unødvendige kolonner og beholder de nødvendige 
+
+mapec <- left_join(map, ec, by="region")
+mapec1 <- mapec %>% filter(!is.na(mapec$coverage)) # Setter sammen mapdataen og ec, fjerner na verdier
+mapec1
+
+mapec2<-ggplot(mapec1, aes( x = long, y = lat, group=group)) +
+  geom_polygon(aes(fill = coverage), color = "black")
+mapec2 # Lager map
+
+mapec3 <- mapec2 + scale_fill_gradient(name = "Excess coverage", low = "green", high =  "red", na.value = "grey50")+
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        rect = element_blank()) # Rydder grafen 
+mapec3
+
+#3)
+
+kl <- subset(union_unempl, select = -c(iso3c, year, level, coverage, density, age, unempl, mean_unempl2015_2019) )
+# Fjerner unødvendige kolonner og beholder de nødvendige 
+
+mapkl <- left_join(map, kl, by="region")
+mapkl1 <- mapkl %>% filter(!is.na(mapkl$coord)) # Setter sammen mapdataen og kl, fjerner na verdier
+mapkl1
+
+mapkl2<-ggplot(mapkl1, aes( x = long, y = lat, group=group)) +
+  geom_polygon(aes(fill = coord), color = "black") # Lager map 
+mapkl2
